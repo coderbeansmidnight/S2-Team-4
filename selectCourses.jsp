@@ -1,7 +1,7 @@
 <%@ page import="java.sql.*"%>
 <html>
 <head>
-  <title>Three Tier Architecture Demo</title>
+  <title>Select Courses</title>
 </head>
 <body>
 <h1>Select Courses Previously Taken</h1>
