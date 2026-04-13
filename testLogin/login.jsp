@@ -2,20 +2,34 @@
 <html>
 <head>
     <title>Login</title>
-</head>
-<body>
+    </head>
+    <body>
 
-<h2>Login</h2>
+    <div class="login-container">
+        <h2>Welcome to FinishInFour</h2>
+        <p class="subtitle">Sign in to continue</p>
 
-<% if (request.getParameter("error") != null) { %>
-    <p style="color:red;">Invalid username or password</p>
-<% } %>
+        <% if (request.getParameter("error") != null) { %>
+            <p class="error">Invalid username or password</p>
+        <% } %>
 
-<form action="<%= request.getContextPath() %>/login" method="post">
-    Username: <input type="text" name="username" required><br><br>
-    Password: <input type="password" name="password" required><br><br>
-    <input type="submit" value="Login">
-</form>
+        <form action="<%= request.getContextPath() %>/login" method="post">
+            <div class="input-group">
+                <input type="text" name="username" placeholder="Username" required>
+            </div>
+
+            <div class="input-group">
+                <input type="password" name="password" placeholder="Password" required>
+            </div>
+
+            <input type="submit" value="Login">
+        </form>
+
+        <div class="login-links">
+            <a href="<%= request.getContextPath() %>/changePassword.jsp" class="secondary-btn">Forgot Password?</a>
+            <a href="<%= request.getContextPath() %>/createAccount.jsp" class="secondary-btn create-btn">Create Account</a>
+        </div>
+    </div>
 
 </body>
 </html>
