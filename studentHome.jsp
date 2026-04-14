@@ -5,14 +5,15 @@
 <html>
 <head>
     <title>Student Home</title>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/studentHome.css">
 </head>
 <body>
 
 <div class="page-container">
     <div class="home-card">
+
         <h1>Student Dashboard</h1>
         <p class="subtitle">View your current classes and search for courses</p>
-
         <div class="section">
             <h2>Current Classes</h2>
             <%
@@ -41,7 +42,6 @@
                 }
             %>
         </div>
-
         <div class="section">
             <h2>Search Classes</h2>
 
@@ -81,8 +81,19 @@
                 }
             %>
         </div>
+        <div class="section">
+            <a href="<%= request.getContextPath() %>/viewTakenClasses" class="secondary-btn create-btn">
+                View Taken Classes
+            </a>
+        </div>
+
+        <div class="section">
+            <a href="<%= request.getContextPath() %>/logout" class="secondary-btn create-btn">
+                Logout
+            </a>
+        </div>
+
     </div>
-    <a href="<%= request.getContextPath() %>/logout" class="secondary-btn create-btn">Logout</a>    
 </div>
 
 </body>
