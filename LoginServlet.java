@@ -27,7 +27,7 @@ public class LoginServlet extends HttpServlet {
                 return;
             }
 
-            String query = "SELECT * FROM app_users WHERE username = ? AND password = ?";
+            String query = "SELECT * FROM users WHERE username = ? AND password = ?";
             PreparedStatement ps = con.prepareStatement(query);
             ps.setString(1, username);
             ps.setString(2, password);
