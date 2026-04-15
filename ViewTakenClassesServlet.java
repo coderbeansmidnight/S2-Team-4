@@ -45,8 +45,8 @@ public class ViewTakenClassesServlet extends HttpServlet {
 
             String sql =
                 "SELECT c.Course_ID, c.Course_name, c.Credits, uc.semester_taken, uc.grade " +
-                "FROM user_courses uc " +
-                "JOIN cs_courses c ON uc.course_id = c.Course_ID " +
+                "FROM taken_classes uc " +
+                "JOIN course c ON uc.course_id = c.Course_ID " +
                 "WHERE uc.sjsu_id = ?";
 
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
