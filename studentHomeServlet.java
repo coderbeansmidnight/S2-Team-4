@@ -26,7 +26,7 @@ public class studentHomeServlet extends HttpServlet {
             if (search != null && !search.trim().isEmpty()) {
                 String searchSql =
                     "SELECT Course_ID, Course_name, Credits " +
-                    "FROM cs_courses " +
+                    "FROM course " +
                     "WHERE Course_ID LIKE ? OR Course_name LIKE ?";
 
                 try (PreparedStatement ps = conn.prepareStatement(searchSql)) {
