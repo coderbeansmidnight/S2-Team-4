@@ -3,4 +3,4 @@ FinishInFour is a web platform that enables students, faculty, and advisors to c
 
 Anika Files:
 
-David Files:
+David Files: I created and uploaded the ViewTakenClasses, login + logout, and the studentHome jsp and java files
