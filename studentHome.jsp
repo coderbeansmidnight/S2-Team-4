@@ -105,15 +105,11 @@ if (studentId == null) {
             %>
         </div>
 		<div class="section">
-	    	<h2>Actions</h2>
+	    <h2>Actions</h2>
 		    <div class="action-row">
-		        <a href="selectCourses.jsp" class="secondary-btn create-btn">
-		            Add Courses
-		        </a>
-		
-		        <a href="<%= request.getContextPath() %>/logout" class="secondary-btn">
-		            Logout
-		        </a>
+		        <a href="selectCourses.jsp" class="secondary-btn create-btn">Add Courses</a>
+		        <a href="validateCourses.jsp" class="secondary-btn create-btn">Validate Core Courses</a>
+		        <a href="<%= request.getContextPath() %>/logout" class="secondary-btn">Logout</a>
 		    </div>
 		</div>
 
