@@ -1,75 +1,102 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.sql.*" %>
 
-<html>
-<head>
-    <title>Login</title>
-</head>
-<body>
-
-<h1>Login</h1>
-
 <%
-String message = "";
+String errorMessage = "";
 
 if ("POST".equalsIgnoreCase(request.getMethod())) {
-    String email = request.getParameter("email");
+    String username = request.getParameter("username");
     String password = request.getParameter("password");
 
-    String dbUser = "root";
-    String dbPassword = "Gopher41";
+    Connection con = null;
+    PreparedStatement ps = null;
+    ResultSet rs = null;
 
-    if (email == null || password == null ||
-        email.trim().isEmpty() || password.trim().isEmpty()) {
-        message = "Email and password are required.";
-    } else {
-        Connection con = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
+    try {
+        Class.forName("com.mysql.cj.jdbc.Driver");
 
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-            con = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/FinishInFour?autoReconnect=true&useSSL=false",
-                dbUser,
-                dbPassword
-            );
+        con = DriverManager.getConnection(
+            "jdbc:mysql://localhost:3307/finishinfour?useSSL=false&serverTimezone=UTC",
+            "root",
+            "FoxyDoxy12!"
+        );
 
-            String sql = "SELECT SJSU_ID, First_Name FROM User WHERE SJSU_Email_Address = ? AND Password = ?";
-            stmt = con.prepareStatement(sql);
-            stmt.setString(1, email);
-            stmt.setString(2, password);
+        String query = "SELECT * FROM users WHERE username = ? AND password = ?";
+        ps = con.prepareStatement(query);
+        ps.setString(1, username);
+        ps.setString(2, password);
 
-            rs = stmt.executeQuery();
+        rs = ps.executeQuery();
 
-            if (rs.next()) {
-                session.setAttribute("studentId", rs.getString("SJSU_ID"));
-                session.setAttribute("firstName", rs.getString("First_Name"));
-                response.sendRedirect("studentHome.jsp");
-                return;
-            } else {
-                message = "Invalid email or password.";
-            }
+        if (rs.next()) {
+            HttpSession currentSession = request.getSession();
 
-        } catch (Exception e) {
-            message = "Error: " + e.getMessage();
-        } finally {
-            try { if (rs != null) rs.close(); } catch (Exception e) {}
-            try { if (stmt != null) stmt.close(); } catch (Exception e) {}
-            try { if (con != null) con.close(); } catch (Exception e) {}
+            String studentId = rs.getString("SJSU ID");
+            String firstName = rs.getString("firstName");
+            String preferredName = rs.getString("preferredName");
+
+            currentSession.setAttribute("user", username);
+            currentSession.setAttribute("studentId", studentId);
+            currentSession.setAttribute("sjsuId", studentId);
+            currentSession.setAttribute("firstName", firstName);
+            currentSession.setAttribute("preferredName", preferredName);
+
+            response.sendRedirect(request.getContextPath() + "/studentHome.jsp");
+            return;
+        } else {
+            errorMessage = "Invalid username or password.";
         }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        errorMessage = "Error: " + e.getMessage();
+    } finally {
+        try { if (rs != null) rs.close(); } catch (Exception e) {}
+        try { if (ps != null) ps.close(); } catch (Exception e) {}
+        try { if (con != null) con.close(); } catch (Exception e) {}
     }
 }
 %>
 
-<% if (!message.isEmpty()) { %>
-    <p><%= message %></p>
-<% } %>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/login.css">
+</head>
+<body>
 
-<form method="post" action="login.jsp">
-    SJSU Email: <input type="text" name="email" required><br><br>
-    Password: <input type="password" name="password" required><br><br>
-    <input type="submit" value="Login">
-</form>
+<div class="page-container">
+    <div class="login-container">
+        <h2>Welcome to FinishInFour</h2>
+        <p class="subtitle">Sign in to continue</p>
+
+        <% if (!errorMessage.isEmpty()) { %>
+            <p class="error"><%= errorMessage %></p>
+        <% } %>
+
+        <form action="<%= request.getContextPath() %>/login.jsp" method="post">
+            <div class="input-group">
+                <input type="text" name="username" placeholder="Username" required>
+            </div>
+
+            <div class="input-group">
+                <input type="password" name="password" placeholder="Password" required>
+            </div>
+
+            <input type="submit" value="Login">
+        </form>
+
+        <div class="login-links">
+            <a href="<%= request.getContextPath() %>/changePassword.jsp" class="secondary-btn">
+                Forgot Password?
+            </a>
+            <a href="<%= request.getContextPath() %>/createAccount.jsp" class="secondary-btn create-btn">
+                Create Account
+            </a>
+        </div>
+    </div>
+</div>
 
 </body>
 </html>
