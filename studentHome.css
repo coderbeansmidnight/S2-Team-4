@@ -1,0 +1,132 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f7fb;
+    color: #1f2937;
+}
+
+.page-container {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 20px;
+    background: linear-gradient(180deg, #0055A2 0%, #0b6bc5 100%);
+}
+
+.home-card {
+    width: 100%;
+    max-width: 950px;
+    background-color: #FFFFFF;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+    padding: 32px;
+}
+
+h1 {
+    margin: 0;
+    color: #0055A2;
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.subtitle {
+    margin-top: 8px;
+    margin-bottom: 28px;
+    color: #4b5563;
+    font-size: 16px;
+}
+
+.section {
+    margin-top: 24px;
+    padding: 22px;
+    background-color: #f9fbff;
+    border: 1px solid #dbe7f5;
+    border-radius: 14px;
+}
+
+.section h2 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    color: #0055A2;
+    font-size: 22px;
+    border-left: 6px solid #E5A823;
+    padding-left: 12px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    overflow: hidden;
+    border-radius: 12px;
+    background-color: #FFFFFF;
+}
+
+thead {
+    background-color: #0055A2;
+    color: #FFFFFF;
+}
+
+th {
+    padding: 14px 16px;
+    text-align: left;
+    font-size: 15px;
+    letter-spacing: 0.3px;
+}
+
+td {
+    padding: 14px 16px;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 15px;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f8fbff;
+}
+
+tbody tr:hover {
+    background-color: #fff7df;
+    transition: background-color 0.2s ease;
+}
+
+.secondary-btn {
+    display: inline-block;
+    text-decoration: none;
+    background-color: #0055A2;
+    color: #FFFFFF;
+    padding: 12px 18px;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    margin-right: 10px;
+}
+
+.secondary-btn:hover {
+    background-color: #003f7a;
+    transform: translateY(-1px);
+}
+
+.create-btn {
+    background-color: #E5A823;
+    color: #1f2937;
+}
+
+.create-btn:hover {
+    background-color: #c99112;
+}
+
+.message {
+    margin: 0;
+    padding: 14px 16px;
+    background-color: #fff7df;
+    border: 1px solid #f1d27a;
+    border-radius: 10px;
+    color: #6b4f00;
+}
+
+.action-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}

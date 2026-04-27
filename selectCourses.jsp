@@ -2,57 +2,101 @@
 <html>
 <head>
   <title>Select Courses</title>
+  <link rel="stylesheet" href="<%= request.getContextPath() %>/css/studentHome.css">
 </head>
 <body>
-<h1>Select Courses Previously Taken</h1>
 
-<form action="processCourses.jsp" method="post">
-<table border="1">
-  <tr>
-  	<td>Select</td>
-    <td>Course ID</td>
-    <td>Name</td>
-    <td>Number of Credits</td>
-  </tr>
-    <%
-     String db = "FinishInFour";
-        String user; // assumes database name is the same as username
-          user = "root";
-        String password = "Gopher41";
-        try {
-            java.sql.Connection con;
-            Class.forName("com.mysql.jdbc.Driver");
+<%
+String studentId = (String) session.getAttribute("studentId");
 
-            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/FinishInFour?autoReconnect=true&useSSL=false",user, password);
+if (studentId == null) {
+    response.sendRedirect("login.jsp");
+    return;
+}
+%>
 
-            // out.println(db + " database successfully opened.<br/><br/>");
+<div class="page-container">
+    <div class="home-card">
 
-            // out.println("Initial entries in table \"Course\": <br/>");
+        <h1>Add Courses</h1>
+        <p class="subtitle">Select courses to add to your schedule</p>
 
-            Statement stmt = con.createStatement();
+        <div class="section">
+            <form action="processCourses.jsp" method="post">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Select</th>
+                            <th>Course ID</th>
+                            <th>Name</th>
+                            <th>Number of Credits</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <%
+                        String user = "root";
+                        String password = "Gopher41";
 
-            ResultSet rs = stmt.executeQuery("SELECT * FROM Course");
+                        Connection con = null;
+                        Statement stmt = null;
+                        ResultSet rs = null;
 
-            while (rs.next()) {
-            	out.println(
-            		    "<tr>" +
-            		    "<td><input type='checkbox' name='selectedCourses' value='" + rs.getString(1) + "'></td>" +
-            		    "<td>" + rs.getString(1) + "</td>" +
-            		    "<td>" + rs.getString(2) + "</td>" +
-            		    "<td>" + rs.getString(3) + "</td>" +
-            		    "</tr>"
-            		);            
-            }
-            rs.close();
-            stmt.close();
-            con.close();
-        } catch(SQLException e) {
-            out.println("SQLException caught: " + e.getMessage());
-        }
-    %>
-</table>
-<br>
-<input type="submit" value="Submit Selected Courses">
-</form>
+                        try {
+                            Class.forName("com.mysql.jdbc.Driver");
+                            con = DriverManager.getConnection(
+                                "jdbc:mysql://localhost:3306/FinishInFour?autoReconnect=true&useSSL=false",
+                                user,
+                                password
+                            );
+
+                            stmt = con.createStatement();
+                            rs = stmt.executeQuery("SELECT * FROM Course");
+
+                            while (rs.next()) {
+                    %>
+                        <tr>
+                            <td>
+                                <input type="checkbox" name="selectedCourses" value="<%= rs.getString(1) %>">
+                            </td>
+                            <td><%= rs.getString(1) %></td>
+                            <td><%= rs.getString(2) %></td>
+                            <td><%= rs.getString(3) %></td>
+                        </tr>
+                    <%
+                            }
+
+                        } catch(SQLException e) {
+                    %>
+                        <tr>
+                            <td colspan="4">SQLException caught: <%= e.getMessage() %></td>
+                        </tr>
+                    <%
+                        } catch(Exception e) {
+                    %>
+                        <tr>
+                            <td colspan="4">Error: <%= e.getMessage() %></td>
+                        </tr>
+                    <%
+                        } finally {
+                            try { if (rs != null) rs.close(); } catch(Exception e) {}
+                            try { if (stmt != null) stmt.close(); } catch(Exception e) {}
+                            try { if (con != null) con.close(); } catch(Exception e) {}
+                        }
+                    %>
+                    </tbody>
+                </table>
+
+                <br>
+
+                <div class="action-row">
+                    <input type="submit" value="Submit Selected Courses" class="secondary-btn create-btn">
+                    <a href="studentHome.jsp" class="secondary-btn">Back to Student Home</a>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+
 </body>
 </html>
