@@ -1,0 +1,124 @@
+body {
+	margin: 0;
+	font-family: Arial, sans-serif;
+	background-color: #f4f7fb;
+	color: #1f2937;
+}
+
+/* Center container */
+.page-container {
+	min-height: 100vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 40px 20px;
+	background: linear-gradient(180deg, #0055A2 0%, #0b6bc5 100%);
+}
+
+/* Login card */
+.login-container {
+	width: 100%;
+	max-width: 420px;
+	background-color: #FFFFFF;
+	border-radius: 18px;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+	padding: 32px;
+	text-align: center;
+}
+
+/* Title */
+.login-container h2 {
+	margin: 0;
+	color: #0055A2;
+	font-size: 28px;
+	font-weight: 700;
+}
+
+/* Subtitle */
+.subtitle {
+	margin-top: 8px;
+	margin-bottom: 24px;
+	color: #4b5563;
+	font-size: 15px;
+}
+
+/* Inputs */
+.input-group {
+	margin-bottom: 16px;
+}
+
+.input-group input {
+	width: 100%;
+	padding: 12px;
+	border-radius: 10px;
+	border: 1px solid #dbe7f5;
+	font-size: 14px;
+	outline: none;
+	transition: border 0.2s ease;
+}
+
+.input-group input:focus {
+	border-color: #0055A2;
+}
+
+/* Login button */
+input[type="submit"] {
+	width: 100%;
+	padding: 12px;
+	border-radius: 10px;
+	border: none;
+	background-color: #0055A2;
+	color: white;
+	font-weight: 600;
+	font-size: 15px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+input[type="submit"]:hover {
+	background-color: #003f7a;
+	transform: translateY(-1px);
+}
+
+/* Links section */
+.login-links {
+	margin-top: 18px;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+/* Buttons */
+.secondary-btn {
+	display: inline-block;
+	text-decoration: none;
+	background-color: #0055A2;
+	color: #FFFFFF;
+	padding: 10px;
+	border-radius: 10px;
+	font-weight: 600;
+	transition: all 0.2s ease;
+}
+
+.secondary-btn:hover {
+	background-color: #003f7a;
+}
+
+.create-btn {
+	background-color: #E5A823;
+	color: #1f2937;
+}
+
+.create-btn:hover {
+	background-color: #c99112;
+}
+
+/* Error message */
+.error {
+	margin-bottom: 15px;
+	padding: 12px;
+	background-color: #ffe5e5;
+	border: 1px solid #f5b5b5;
+	border-radius: 10px;
+	color: #b91c1c;
+}
