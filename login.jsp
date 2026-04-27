@@ -1,35 +1,75 @@
-<!DOCTYPE html>
+<%@ page import="java.sql.*" %>
+
 <html>
 <head>
     <title>Login</title>
 </head>
 <body>
 
-    <div class="login-container">
-        <h2>Welcome to FinishInFour</h2>
-        <p class="subtitle">Sign in to continue</p>
+<h1>Login</h1>
 
-        <% if (request.getParameter("error") != null) { %>
-            <p class="error">Invalid username or password</p>
-        <% } %>
+<%
+String message = "";
 
-        <form action="<%= request.getContextPath() %>/login" method="post">
-            <div class="input-group">
-                <input type="text" name="username" placeholder="Username" required>
-            </div>
+if ("POST".equalsIgnoreCase(request.getMethod())) {
+    String email = request.getParameter("email");
+    String password = request.getParameter("password");
 
-            <div class="input-group">
-                <input type="password" name="password" placeholder="Password" required>
-            </div>
+    String dbUser = "root";
+    String dbPassword = "Gopher41";
 
-            <input type="submit" value="Login">
-        </form>
+    if (email == null || password == null ||
+        email.trim().isEmpty() || password.trim().isEmpty()) {
+        message = "Email and password are required.";
+    } else {
+        Connection con = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
 
-        <div class="login-links">
-            <a href="<%= request.getContextPath() %>/changePassword.jsp" class="secondary-btn">Forgot Password?</a>
-            <a href="<%= request.getContextPath() %>/createAccount.jsp" class="secondary-btn create-btn">Create Account</a>
-        </div>
-    </div>
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            con = DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/FinishInFour?autoReconnect=true&useSSL=false",
+                dbUser,
+                dbPassword
+            );
+
+            String sql = "SELECT SJSU_ID, First_Name FROM User WHERE SJSU_Email_Address = ? AND Password = ?";
+            stmt = con.prepareStatement(sql);
+            stmt.setString(1, email);
+            stmt.setString(2, password);
+
+            rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                session.setAttribute("studentId", rs.getString("SJSU_ID"));
+                session.setAttribute("firstName", rs.getString("First_Name"));
+                response.sendRedirect("studentHome.jsp");
+                return;
+            } else {
+                message = "Invalid email or password.";
+            }
+
+        } catch (Exception e) {
+            message = "Error: " + e.getMessage();
+        } finally {
+            try { if (rs != null) rs.close(); } catch (Exception e) {}
+            try { if (stmt != null) stmt.close(); } catch (Exception e) {}
+            try { if (con != null) con.close(); } catch (Exception e) {}
+        }
+    }
+}
+%>
+
+<% if (!message.isEmpty()) { %>
+    <p><%= message %></p>
+<% } %>
+
+<form method="post" action="login.jsp">
+    SJSU Email: <input type="text" name="email" required><br><br>
+    Password: <input type="password" name="password" required><br><br>
+    <input type="submit" value="Login">
+</form>
 
 </body>
 </html>

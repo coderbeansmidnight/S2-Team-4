@@ -1,5 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="java.util.List" %>
+<%@ page import="java.sql.*" %>
 
 <!DOCTYPE html>
 <html>
@@ -9,82 +9,100 @@
 </head>
 <body>
 
+<%
+String studentId = (String) session.getAttribute("studentId");
+String firstName = (String) session.getAttribute("firstName");
+
+if (studentId == null) {
+    response.sendRedirect("login.jsp");
+    return;
+}
+%>
+
 <div class="page-container">
     <div class="home-card">
 
         <h1>Student Dashboard</h1>
-        <p class="subtitle">View your current classes and search for courses</p>
-        <div class="section">
-            <h2>Current Classes</h2>
-            <%
-                List currentClasses = (List) request.getAttribute("currentClasses");
-                if (currentClasses != null && !currentClasses.isEmpty()) {
-            %>
-                <div class="course-list">
-                    <%
-                        for (Object obj : currentClasses) {
-                            String[] c = (String[]) obj;
-                    %>
-                        <div class="course-box">
-                            <h3><%= c[0] %></h3>
-                            <p><strong>Course:</strong> <%= c[1] %></p>
-                            <p><strong>Credits:</strong> <%= c[2] %></p>
-                        </div>
-                    <%
-                        }
-                    %>
-                </div>
-            <%
-                } else {
-            %>
-                <p>You are not enrolled in any classes yet.</p>
-            <%
-                }
-            %>
-        </div>
-        <div class="section">
-            <h2>Search Classes</h2>
+        <p class="subtitle">Welcome, <%= firstName %></p>
 
-            <form action="<%= request.getContextPath() %>/studentHome" method="get" class="search-form">
-                <input type="text" name="search" placeholder="Search by course ID or course name"
-                       value="<%= request.getAttribute("searchTerm") != null ? request.getAttribute("searchTerm") : "" %>">
-                <button type="submit">Search</button>
-            </form>
+        <div class="section">
+            <h2>Classes Taken</h2>
 
             <%
-                List searchResults = (List) request.getAttribute("searchResults");
-                String searchTerm = (String) request.getAttribute("searchTerm");
+            String dbUser = "root";
+            String dbPassword = "Gopher41";
 
-                if (searchTerm != null && !searchTerm.trim().isEmpty()) {
+            Connection con = null;
+            PreparedStatement stmt = null;
+            ResultSet rs = null;
+
+            boolean hasClasses = false;
+
+            try {
+                Class.forName("com.mysql.jdbc.Driver");
+                con = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/FinishInFour?autoReconnect=true&useSSL=false",
+                    dbUser,
+                    dbPassword
+                );
+
+                String sql =
+                	"SELECT B.Course_ID, B.Name, B.Number_of_Credits " +
+                	"FROM Course B " +
+                	"WHERE B.Course_ID IN ("+
+                		    "SELECT A.Course_ID "+
+                		    "FROM Adds A "+
+                		    "WHERE A.SJSU_ID = ?)";
+
+                stmt = con.prepareStatement(sql);
+                stmt.setString(1, studentId);
+                rs = stmt.executeQuery();
             %>
-                <div class="course-list">
-                    <%
-                        if (searchResults != null && !searchResults.isEmpty()) {
-                            for (Object obj : searchResults) {
-                                String[] c = (String[]) obj;
-                    %>
-                        <div class="course-box">
-                            <h3><%= c[0] %></h3>
-                            <p><strong>Course:</strong> <%= c[1] %></p>
-                            <p><strong>Credits:</strong> <%= c[2] %></p>
-                        </div>
-                    <%
-                            }
-                        } else {
-                    %>
-                        <p>No classes matched your search.</p>
-                    <%
-                        }
-                    %>
-                </div>
+
             <%
-                }
+			if (!hasClasses && !rs.isBeforeFirst()) {
+			%>
+			    <p>You are not enrolled in any classes yet.</p>
+			<%
+			} else {
+			%>
+			    <table border="1" cellpadding="10" cellspacing="0" width="100%">
+			        <thead>
+			            <tr>
+			                <th>Course ID</th>
+			                <th>Course Name</th>
+			                <th>Credits</th>
+			            </tr>
+			        </thead>
+			        <tbody>
+			            <%
+			            while (rs.next()) {
+			            %>
+			                <tr>
+			                    <td><%= rs.getString("Course_ID") %></td>
+			                    <td><%= rs.getString("Name") %></td>
+			                    <td><%= rs.getString("Number_of_Credits") %></td>
+			                </tr>
+			            <%
+			            }
+			            %>
+			        </tbody>
+			    </table>
+			<%
+			}
+			%>
+
+            <%
+            } catch (Exception e) {
             %>
-        </div>
-        <div class="section">
-            <a href="<%= request.getContextPath() %>/viewTakenClasses" class="secondary-btn create-btn">
-                View Taken Classes
-            </a>
+                <p>Error loading classes: <%= e.getMessage() %></p>
+            <%
+            } finally {
+                try { if (rs != null) rs.close(); } catch (Exception e) {}
+                try { if (stmt != null) stmt.close(); } catch (Exception e) {}
+                try { if (con != null) con.close(); } catch (Exception e) {}
+            }
+            %>
         </div>
 
         <div class="section">
