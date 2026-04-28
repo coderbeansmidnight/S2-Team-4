@@ -5,12 +5,15 @@
 String errorMessage = "";
 
 if ("POST".equalsIgnoreCase(request.getMethod())) {
+
     String username = request.getParameter("username");
     String password = request.getParameter("password");
 
     Connection con = null;
-    PreparedStatement ps = null;
-    ResultSet rs = null;
+    PreparedStatement userStmt = null;
+    PreparedStatement facultyStmt = null;
+    ResultSet userRs = null;
+    ResultSet facultyRs = null;
 
     try {
         Class.forName("com.mysql.cj.jdbc.Driver");
@@ -21,28 +24,50 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
             "FoxyDoxy12!"
         );
 
-        String query = "SELECT * FROM users WHERE username = ? AND password = ?";
-        ps = con.prepareStatement(query);
-        ps.setString(1, username);
-        ps.setString(2, password);
+        // 1. Check user credentials
+        String userSql = "SELECT * " +
+        				 "FROM users " +
+        				 "WHERE username = ? AND password = ?";
+        userStmt = con.prepareStatement(userSql);
+        userStmt.setString(1, username);
+        userStmt.setString(2, password);
 
-        rs = ps.executeQuery();
+        userRs = userStmt.executeQuery();
 
-        if (rs.next()) {
+        if (userRs.next()) {
+
             HttpSession currentSession = request.getSession();
 
-            String studentId = rs.getString("SJSU ID");
-            String firstName = rs.getString("firstName");
-            String preferredName = rs.getString("preferredName");
+            String sjsuId = userRs.getString("SJSU_ID");
+            String firstName = userRs.getString("firstName");
+            String preferredName = userRs.getString("preferredName");
 
             currentSession.setAttribute("user", username);
-            currentSession.setAttribute("studentId", studentId);
-            currentSession.setAttribute("sjsuId", studentId);
+            currentSession.setAttribute("SJSU_ID", sjsuId);
             currentSession.setAttribute("firstName", firstName);
             currentSession.setAttribute("preferredName", preferredName);
 
-            response.sendRedirect(request.getContextPath() + "/studentHome.jsp");
-            return;
+            String facultySql = "SELECT * " +
+            					"FROM faculty " +
+            					"WHERE SJSU_ID = ?";
+            facultyStmt = con.prepareStatement(facultySql);
+            facultyStmt.setString(1, sjsuId);
+
+            facultyRs = facultyStmt.executeQuery();
+
+            if (facultyRs.next()) {
+
+                currentSession.setAttribute("role", "faculty");
+                response.sendRedirect(request.getContextPath() + "/facultyHome.jsp");
+                return;
+
+            } else {
+
+                currentSession.setAttribute("role", "student");
+                response.sendRedirect(request.getContextPath() + "/studentHome.jsp");
+                return;
+            }
+
         } else {
             errorMessage = "Invalid username or password.";
         }
@@ -51,8 +76,10 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
         e.printStackTrace();
         errorMessage = "Error: " + e.getMessage();
     } finally {
-        try { if (rs != null) rs.close(); } catch (Exception e) {}
-        try { if (ps != null) ps.close(); } catch (Exception e) {}
+        try { if (facultyRs != null) facultyRs.close(); } catch (Exception e) {}
+        try { if (userRs != null) userRs.close(); } catch (Exception e) {}
+        try { if (facultyStmt != null) facultyStmt.close(); } catch (Exception e) {}
+        try { if (userStmt != null) userStmt.close(); } catch (Exception e) {}
         try { if (con != null) con.close(); } catch (Exception e) {}
     }
 }
@@ -68,6 +95,7 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
 
 <div class="page-container">
     <div class="login-container">
+
         <h2>Welcome to FinishInFour</h2>
         <p class="subtitle">Sign in to continue</p>
 
@@ -76,6 +104,7 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
         <% } %>
 
         <form action="<%= request.getContextPath() %>/login.jsp" method="post">
+
             <div class="input-group">
                 <input type="text" name="username" placeholder="Username" required>
             </div>
@@ -85,16 +114,19 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
             </div>
 
             <input type="submit" value="Login">
+
         </form>
 
         <div class="login-links">
             <a href="<%= request.getContextPath() %>/changePassword.jsp" class="secondary-btn">
                 Forgot Password?
             </a>
+
             <a href="<%= request.getContextPath() %>/createAccount.jsp" class="secondary-btn create-btn">
                 Create Account
             </a>
         </div>
+
     </div>
 </div>
 
