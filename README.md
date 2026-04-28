@@ -3,7 +3,7 @@ FinishInFour is a web platform that enables students, faculty, and advisors to c
 
 Anika Files: I completed the changePassword, createAccount, selectCourses, and validateCourses JSP files. 
 
-David Files: I created and uploaded the ViewTakenClasses, login + logout, and the studentHome jsp and java files
+David Files: I created and uploaded the login + logout, and the studentHome, facultyHome, and handleEdit  jsp files as well as a few java files
 
 
 Functionalities Completed:
