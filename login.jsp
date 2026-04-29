@@ -26,7 +26,7 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
 
         String userSql =
             "SELECT * " +
-            "FROM users " +
+            "FROM user " +
             "WHERE SJSU_ID = ? " +
             "AND password = ?";
 
