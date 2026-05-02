@@ -9,7 +9,7 @@ body {
     min-height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: flex-start;
+    align-items: center;
     padding: 40px 20px;
     background: linear-gradient(180deg, #0055A2 0%, #0b6bc5 100%);
 }
@@ -129,4 +129,80 @@ tbody tr:hover {
     gap: 12px;
     flex-wrap: wrap;
     margin-top: 8px;
+}
+
+.form-card {
+    width: 100%;
+    max-width: 520px;
+    background-color: #FFFFFF;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+    padding: 32px;
+}
+
+.account-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.input-group label {
+    font-weight: 600;
+    color: #0055A2;
+}
+
+.input-group input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    border: 1px solid #cfd8e3;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+.input-group input:focus {
+    border-color: #0055A2;
+    box-shadow: 0 0 0 2px rgba(0,85,162,0.15);
+    outline: none;
+}
+
+.error {
+    padding: 12px;
+    border-radius: 10px;
+    background-color: #fff4f4;
+    border: 1px solid #efc2c2;
+    color: #9f1d1d;
+}
+
+.form-submit {
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.save-btn {
+    background-color: #E5A823;
+    color: #ffffff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.save-btn:hover {
+    background-color: #E5D100;
+    transform: translateY(-1px);
+}
+
+.save-btn:active {
+    transform: scale(0.97);
 }
