@@ -68,12 +68,9 @@ String searchQuery = request.getParameter("search");
 
 					String sql;
 					if (searchQuery != null && !searchQuery.trim().isEmpty()) {
-						sql = "SELECT * " +
-							  "FROM course " +
-							  "WHERE Name LIKE ? OR Course_ID LIKE ?";
+						sql = "SELECT * FROM course WHERE Name LIKE ? OR Course_ID LIKE ?";
 					} else {
-						sql = "SELECT * " +
-							  "FROM course";
+						sql = "SELECT * FROM course";
 					}
 
 					ps = conn.prepareStatement(sql);
@@ -104,7 +101,7 @@ String searchQuery = request.getParameter("search");
 					ResultSet editRs = null;
 
 					try {
-						editStmt = conn.prepareStatement("SELECT Description FROM edits WHERE Course_ID = ? AND SJSU_ID = ?");
+						editStmt = conn.prepareStatement("SELECT CourseNotes FROM edits WHERE Course_ID = ? AND SJSU_ID = ?");
 						editStmt.setString(1, courseId);
 						editStmt.setString(2, facultyId);
 
@@ -113,12 +110,13 @@ String searchQuery = request.getParameter("search");
 						if (editRs.next()) {
 					%>
 					<p>
-						<strong>Description:</strong>
-						<%=editRs.getString("Description")%></p>
+						<strong>Course Notes:</strong>
+						<%=editRs.getString("CourseNotes")%>
+					</p>
 					<%
 					} else {
 					%>
-					<p>No description yet.</p>
+					<p>No notes yet.</p>
 					<%
 					}
 
@@ -135,10 +133,10 @@ String searchQuery = request.getParameter("search");
 
 						<input type="hidden" name="courseId" value="<%=courseId%>">
 
-						<label>Update Description:</label><br>
-						<textarea name="description" rows="4" cols="50"></textarea>
+						<label>Update Course Notes:</label><br>
+						<textarea name="courseNotes" rows="4" cols="50"></textarea>
 						<br>
-						<br> <input type="submit" value="Update Description"
+						<br> <input type="submit" value="Update Notes"
 							class="secondary-btn create-btn">
 					</form>
 
@@ -169,6 +167,18 @@ String searchQuery = request.getParameter("search");
 				}
 				%>
 
+			</div>
+
+			<!-- NEW ACTION BUTTONS -->
+			<div class="section">
+				<h2>Course Management</h2>
+				<div class="action-row">
+
+					<a href="createCourse.jsp" class="secondary-btn create-btn">
+						Create Course </a> <a href="deleteCourseFromSystem.jsp"
+						class="secondary-btn"> Delete Course </a>
+
+				</div>
 			</div>
 
 			<div class="section">
