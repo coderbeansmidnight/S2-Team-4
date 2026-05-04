@@ -10,9 +10,9 @@ if (facultyId == null || role == null || !role.equals("faculty")) {
 }
 
 String courseId = request.getParameter("courseId");
-String description = request.getParameter("description");
+String courseNotes = request.getParameter("courseNotes");
 
-if (courseId == null || description == null || description.trim().isEmpty()) {
+if (courseId == null || courseNotes == null || courseNotes.trim().isEmpty()) {
     response.sendRedirect("facultyHome.jsp");
     return;
 }
@@ -30,14 +30,14 @@ try {
     );
 
     String sql =
-        "INSERT INTO edits (SJSU_ID, Course_ID, Description) " +
+        "INSERT INTO edits (SJSU_ID, Course_ID, CourseNotes) " +
         "VALUES (?, ?, ?) " +
-        "ON DUPLICATE KEY UPDATE Description = VALUES(Description)";
+        "ON DUPLICATE KEY UPDATE CourseNotes = VALUES(CourseNotes)";
 
     ps = conn.prepareStatement(sql);
     ps.setString(1, facultyId);
     ps.setString(2, courseId);
-    ps.setString(3, description);
+    ps.setString(3, courseNotes);
 
     ps.executeUpdate();
 
