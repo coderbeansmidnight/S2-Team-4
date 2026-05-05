@@ -84,7 +84,6 @@ String searchQuery = request.getParameter("search");
 				<%=displayName%>
 			</p>
 
-			<!-- SEARCH -->
 			<div class="section">
 				<h2>Search Courses</h2>
 
@@ -100,7 +99,6 @@ String searchQuery = request.getParameter("search");
 				</form>
 			</div>
 
-			<!-- COURSES -->
 			<div class="section">
 				<h2>Courses</h2>
 
