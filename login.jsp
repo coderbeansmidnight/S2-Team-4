@@ -19,14 +19,14 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
         Class.forName("com.mysql.cj.jdbc.Driver");
 
         con = DriverManager.getConnection(
-            "jdbc:mysql://localhost:3307/finishinfour?useSSL=false&serverTimezone=UTC",
+            "jdbc:mysql://localhost:3307/FinishInFour?useSSL=false&serverTimezone=UTC",
             "root",
             "FoxyDoxy12!"
         );
 
         String userSql =
             "SELECT * " +
-            "FROM user " +
+            "FROM User " +
             "WHERE SJSU_ID = ? " +
             "AND password = ?";
 
@@ -40,16 +40,16 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
 
             HttpSession currentSession = request.getSession();
 
-            String firstName = userRs.getString("firstName");
-            String preferredName = userRs.getString("preferredName");
+            String firstName = userRs.getString("First_Name");
+            String preferredName = userRs.getString("Preferred_Name");
 
             currentSession.setAttribute("SJSU_ID", sjsuId);
-            currentSession.setAttribute("firstName", firstName);
-            currentSession.setAttribute("preferredName", preferredName);
+            currentSession.setAttribute("First_Name", firstName);
+            currentSession.setAttribute("Preferred_Name", preferredName);
 
             String facultySql =
                 "SELECT * " +
-                "FROM faculty " +
+                "FROM Faculty " +
                 "WHERE SJSU_ID = ?";
 
             facultyStmt = con.prepareStatement(facultySql);
