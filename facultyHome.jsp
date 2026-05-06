@@ -4,8 +4,8 @@
 <%
 String role = (String) session.getAttribute("role");
 String facultyId = (String) session.getAttribute("SJSU_ID");
-String firstName = (String) session.getAttribute("firstName");
-String preferredName = (String) session.getAttribute("preferredName");
+String firstName = (String) session.getAttribute("First_Name");
+String preferredName = (String) session.getAttribute("Preferred_Name");
 
 String displayName = firstName;
 if (preferredName != null && !preferredName.trim().isEmpty()) {
@@ -40,7 +40,7 @@ if ("POST".equalsIgnoreCase(method)) {
                 "FoxyDoxy12!"
             );
 
-            String sql2 = "UPDATE course " +
+            String sql2 = "UPDATE Course " +
             			  "SET Description = ? " +
             			  "WHERE Course_ID = ?";
             ps2 = conn2.prepareStatement(sql2);
@@ -119,7 +119,7 @@ try {
     String sql;
     if (searchQuery != null && !searchQuery.trim().isEmpty()) {
         sql = "SELECT * " +
-    		  "FROM course " +
+    		  "FROM Course " +
         	  "WHERE Name LIKE ? OR Course_ID LIKE ?";
     } else {
         sql = "SELECT * FROM course";
@@ -169,7 +169,7 @@ PreparedStatement editStmt = null;
 ResultSet editRs = null;
 
 try {
-    editStmt = conn.prepareStatement("SELECT CourseNotes FROM edits WHERE Course_ID = ? AND SJSU_ID = ?");
+    editStmt = conn.prepareStatement("SELECT CourseNotes FROM Edits WHERE Course_ID = ? AND SJSU_ID = ?");
     editStmt.setString(1, courseId);
     editStmt.setString(2, facultyId);
 
