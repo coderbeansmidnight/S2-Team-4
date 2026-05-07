@@ -4,10 +4,10 @@
 <%
 String role = (String) session.getAttribute("role");
 String facultyId = (String) session.getAttribute("SJSU_ID");
-String firstName = (String) session.getAttribute("First_Name");
-String preferredName = (String) session.getAttribute("Preferred_Name");
+String firstName = (String) session.getAttribute("firstName");
+String preferredName = (String) session.getAttribute("preferredName");
 
-String displayName = firstName;
+String displayName = preferredName;
 if (preferredName != null && !preferredName.trim().isEmpty()) {
     displayName = preferredName;
 }
@@ -122,7 +122,7 @@ try {
     		  "FROM Course " +
         	  "WHERE Name LIKE ? OR Course_ID LIKE ?";
     } else {
-        sql = "SELECT * FROM course";
+        sql = "SELECT * FROM Course";
     }
 
     ps = conn.prepareStatement(sql);
