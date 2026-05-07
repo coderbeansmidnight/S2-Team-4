@@ -7,7 +7,7 @@ String facultyId = (String) session.getAttribute("SJSU_ID");
 String firstName = (String) session.getAttribute("firstName");
 String preferredName = (String) session.getAttribute("preferredName");
 
-String displayName = preferredName;
+String displayName = firstName;
 if (preferredName != null && !preferredName.trim().isEmpty()) {
     displayName = preferredName;
 }
