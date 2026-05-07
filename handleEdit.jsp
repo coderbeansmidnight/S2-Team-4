@@ -30,7 +30,7 @@ try {
     );
 
     String sql =
-        "INSERT INTO edits (SJSU_ID, Course_ID, CourseNotes) " +
+        "INSERT INTO Edits (SJSU_ID, Course_ID, CourseNotes) " +
         "VALUES (?, ?, ?) " +
         "ON DUPLICATE KEY UPDATE CourseNotes = VALUES(CourseNotes)";
 
