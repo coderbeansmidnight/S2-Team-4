@@ -28,7 +28,7 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
             "FoxyDoxy12!"
         );
 
-        ps = conn.prepareStatement("DELETE FROM course WHERE Course_ID = ?");
+        ps = conn.prepareStatement("DELETE FROM Course WHERE Course_ID = ?");
         ps.setString(1, deleteId);
 
         ps.executeUpdate();
@@ -97,7 +97,7 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
 
                 if (searchQuery != null && !searchQuery.trim().isEmpty()) {
                     sql = "SELECT * " +
-                    	  "FROM course " +
+                    	  "FROM Course " +
                     	  "WHERE Name LIKE ? OR Course_ID LIKE ?";
                     ps = conn.prepareStatement(sql);
                     ps.setString(1, "%" + searchQuery.trim() + "%");
