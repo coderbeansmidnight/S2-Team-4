@@ -10,7 +10,6 @@ if (facultyId == null || role == null || !role.equals("faculty")) {
     return;
 }
 
-// Detect form submission
 String method = request.getMethod();
 
 if ("POST".equalsIgnoreCase(method)) {
@@ -32,7 +31,7 @@ if ("POST".equalsIgnoreCase(method)) {
             "FoxyDoxy12!"
         );
 
-        String sql = "INSERT INTO course (Course_ID, Name, Number_Of_Credits, Description) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO Course (Course_ID, Name, Number_Of_Credits, Description) VALUES (?, ?, ?, ?)";
         ps = conn.prepareStatement(sql);
 
         ps.setString(1, courseId);
