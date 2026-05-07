@@ -1,136 +1,75 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java"%>
-<%@ page import="java.sql.*"%>
+<%@ page import="java.sql.*" %>
+
+<html>
+<head>
+    <title>Login</title>
+</head>
+<body>
+
+<h1>Login</h1>
 
 <%
-String errorMessage = "";
+String message = "";
 
 if ("POST".equalsIgnoreCase(request.getMethod())) {
-
-    String sjsuId = request.getParameter("sjsuId");
+    String email = request.getParameter("email");
     String password = request.getParameter("password");
 
-    Connection con = null;
-    PreparedStatement userStmt = null;
-    PreparedStatement facultyStmt = null;
-    ResultSet userRs = null;
-    ResultSet facultyRs = null;
+    String dbUser = "root";
+    String dbPassword = "Gopher41";
 
-    try {
-        Class.forName("com.mysql.cj.jdbc.Driver");
+    if (email == null || password == null ||
+        email.trim().isEmpty() || password.trim().isEmpty()) {
+        message = "Email and password are required.";
+    } else {
+        Connection con = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
 
-        con = DriverManager.getConnection(
-            "jdbc:mysql://localhost:3307/FinishInFour?useSSL=false&serverTimezone=UTC",
-            "root",
-            "FoxyDoxy12!"
-        );
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            con = DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/FinishInFour?autoReconnect=true&useSSL=false",
+                dbUser,
+                dbPassword
+            );
 
-        String userSql =
-            "SELECT * " +
-            "FROM User " +
-            "WHERE SJSU_ID = ? " +
-            "AND password = ?";
+            String sql = "SELECT SJSU_ID, First_Name FROM User WHERE SJSU_Email_Address = ? AND Password = ?";
+            stmt = con.prepareStatement(sql);
+            stmt.setString(1, email);
+            stmt.setString(2, password);
 
-        userStmt = con.prepareStatement(userSql);
-        userStmt.setString(1, sjsuId);
-        userStmt.setString(2, password);
+            rs = stmt.executeQuery();
 
-        userRs = userStmt.executeQuery();
-
-        if (userRs.next()) {
-
-            HttpSession currentSession = request.getSession();
-
-            String firstName = userRs.getString("First_Name");
-            String preferredName = userRs.getString("Preferred_Name");
-
-            currentSession.setAttribute("SJSU_ID", sjsuId);
-            currentSession.setAttribute("First_Name", firstName);
-            currentSession.setAttribute("Preferred_Name", preferredName);
-
-            String facultySql =
-                "SELECT * " +
-                "FROM Faculty " +
-                "WHERE SJSU_ID = ?";
-
-            facultyStmt = con.prepareStatement(facultySql);
-            facultyStmt.setString(1, sjsuId);
-
-            facultyRs = facultyStmt.executeQuery();
-
-            if (facultyRs.next()) {
-
-                currentSession.setAttribute("role", "faculty");
-                response.sendRedirect(request.getContextPath() + "/facultyHome.jsp");
+            if (rs.next()) {
+                session.setAttribute("studentId", rs.getString("SJSU_ID"));
+                session.setAttribute("firstName", rs.getString("First_Name"));
+                response.sendRedirect("studentHome.jsp");
                 return;
-
             } else {
-
-                currentSession.setAttribute("role", "student");
-                response.sendRedirect(request.getContextPath() + "/studentHome.jsp");
-                return;
+                message = "Invalid email or password.";
             }
 
-        } else {
-            errorMessage = "Invalid SJSU ID or password.";
+        } catch (Exception e) {
+            message = "Error: " + e.getMessage();
+        } finally {
+            try { if (rs != null) rs.close(); } catch (Exception e) {}
+            try { if (stmt != null) stmt.close(); } catch (Exception e) {}
+            try { if (con != null) con.close(); } catch (Exception e) {}
         }
-
-    } catch (Exception e) {
-        e.printStackTrace();
-        errorMessage = "Error: " + e.getMessage();
-    } finally {
-        try { if (facultyRs != null) facultyRs.close(); } catch (Exception e) {}
-        try { if (userRs != null) userRs.close(); } catch (Exception e) {}
-        try { if (facultyStmt != null) facultyStmt.close(); } catch (Exception e) {}
-        try { if (userStmt != null) userStmt.close(); } catch (Exception e) {}
-        try { if (con != null) con.close(); } catch (Exception e) {}
     }
 }
 %>
 
-<!DOCTYPE html>
-<html>
-<head>
-<title>Login</title>
-<link rel="stylesheet"
-	href="<%= request.getContextPath() %>/css/login.css">
-</head>
-<body>
+<% if (!message.isEmpty()) { %>
+    <p><%= message %></p>
+<% } %>
 
-	<div class="page-container">
-		<div class="login-container">
-
-			<h2>Welcome to FinishInFour</h2>
-			<p class="subtitle">Sign in to continue</p>
-
-			<% if (!errorMessage.isEmpty()) { %>
-			<p class="error"><%= errorMessage %></p>
-			<% } %>
-
-			<form action="<%= request.getContextPath() %>/login.jsp"
-				method="post">
-
-				<div class="input-group">
-					<input type="text" name="sjsuId" placeholder="SJSU ID" required>
-				</div>
-
-				<div class="input-group">
-					<input type="password" name="password" placeholder="Password"
-						required>
-				</div>
-
-				<input type="submit" value="Login">
-
-			</form>
-
-			<div class="login-links">
-				<a href="<%= request.getContextPath() %>/changePassword.jsp"
-					class="secondary-btn"> Forgot Password? </a> <a
-					href="<%= request.getContextPath() %>/createAccount.jsp"
-					class="secondary-btn create-btn"> Create Account </a>
-			</div>
-
-		</div>
-	</div>
+<form method="post" action="login.jsp">
+    SJSU Email: <input type="text" name="email" required><br><br>
+    Password: <input type="password" name="password" required><br><br>
+    <input type="submit" value="Login">
+</form>
 
 </body>
 </html>

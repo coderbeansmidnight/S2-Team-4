@@ -10,11 +10,11 @@
 <body>
 
 <%
-String studentId = (String) session.getAttribute("SJSU_ID");
-String firstName = (String) session.getAttribute("First_Name");
+String studentId = (String) session.getAttribute("studentId");
+String firstName = (String) session.getAttribute("firstName");
 
 if (studentId == null) {
-	response.sendRedirect(request.getContextPath() + "/login.jsp");
+    response.sendRedirect("login.jsp");
     return;
 }
 %>
@@ -137,7 +137,7 @@ if (studentId == null) {
 		    <div class="action-row">
 		        <a href="selectCourses.jsp" class="secondary-btn create-btn">Add Courses</a>
 		        <a href="validateCourses.jsp" class="secondary-btn create-btn">Validate Core Courses</a>
-		        <a href="<%= request.getContextPath() %>/login.jsp" class="secondary-btn">Logout</a>
+		        <a href="<%= request.getContextPath() %>/logout" class="secondary-btn">Logout</a>
 		        <a href="deleteCourses.jsp" class="secondary-btn">Delete Courses</a>
 		    </div>
 		</div>
@@ -147,8 +147,3 @@ if (studentId == null) {
 
 </body>
 </html>
-<%
-out.println("SESSION SJSU_ID = " + session.getAttribute("SJSU_ID"));
-out.println("SESSION studentId = " + session.getAttribute("studentId"));
-out.println("SESSION role = " + session.getAttribute("role"));
-%>
