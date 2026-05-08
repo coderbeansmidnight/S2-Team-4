@@ -36,8 +36,6 @@ if (studentId == null) {
             PreparedStatement stmt = null;
             ResultSet rs = null;
 
-            boolean hasClasses = false;
-
             try {
                 Class.forName("com.mysql.jdbc.Driver");
                 con = DriverManager.getConnection(
@@ -46,84 +44,73 @@ if (studentId == null) {
                     dbPassword
                 );
 
-                /* String sql =
-                	"SELECT B.Course_ID, B.Name, B.Number_of_Credits " +
-                	"FROM Course B " +
-                	"WHERE B.Course_ID IN ("+
-                		    "SELECT A.Course_ID "+
-                		    "FROM Adds A "+
-                		    "WHERE A.SJSU_ID = ?)"; */
-                		    
-               	String sql =
-                	"SELECT B.Course_ID, B.Name, B.Number_of_Credits, A.Notes " +
-                	"FROM Course B " +
-                	"JOIN Adds A ON B.Course_ID = A.Course_ID " +
-                	"WHERE A.SJSU_ID = ?";
+                String sql =
+                    "SELECT B.Course_ID, B.Name, B.Number_of_Credits, B.Description, A.Notes " +
+                    "FROM Course B " +
+                    "JOIN Adds A ON B.Course_ID = A.Course_ID " +
+                    "WHERE A.SJSU_ID = ?";
 
                 stmt = con.prepareStatement(sql);
                 stmt.setString(1, studentId);
                 rs = stmt.executeQuery();
+
+                if (!rs.isBeforeFirst()) {
             %>
-
+                <p class="message">You are not enrolled in any classes yet.</p>
             <%
-			if (!hasClasses && !rs.isBeforeFirst()) {
-			%>
-			    <p>You are not enrolled in any classes yet.</p>
-			<%
-			} else {
-			%>
-			    <table border="1" cellpadding="10" cellspacing="0" width="100%">
-			        <thead>
-			            <tr>
-			                <th>Course ID</th>
-			                <th>Course Name</th>
-			                <th>Credits</th>
-			                <th>Your Notes</th>
-			            </tr>
-			        </thead>
-			        <tbody>
-						<%
-						while (rs.next()) {
-						    String notes = rs.getString("Notes");
-						    if (notes == null) notes = "";
-						%>
-						    <tr>
-						        <td><%= rs.getString("Course_ID") %></td>
-						        <td><%= rs.getString("Name") %></td>
-						        <td><%= rs.getString("Number_of_Credits") %></td>
-						
-						        <td>
-						            <form method="post" action="updateNotes.jsp" style="display:flex; gap:8px;">
-						                
-						                <input type="text"
-						                       name="notes"
-						                       class="notes-input"
-						                       placeholder="Add notes..."
-						                       value="<%= notes %>" />
-						
-						                <input type="hidden"
-						                       name="courseId"
-						                       value="<%= rs.getString("Course_ID") %>" />
-						
-						                <input type="submit"
-						                       value="Save"
-						                       class="save-btn" />
-						            </form>
-						        </td>
-						    </tr>
-						<%
-						}
-						%>
-					</tbody>
-			    </table>
-			<%
-			}
-			%>
+                } else {
+            %>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Course ID</th>
+                            <th>Course Name</th>
+                            <th>Credits</th>
+                            <th>Description</th>
+                            <th>Your Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <%
+                        while (rs.next()) {
+                            String notes = rs.getString("Notes");
+                            if (notes == null) notes = "";
+                        %>
+                        <tr>
+                            <td><%= rs.getString("Course_ID") %></td>
+                            <td><%= rs.getString("Name") %></td>
+                            <td><%= rs.getString("Number_of_Credits") %></td>
+                            <td><%= rs.getString("Description") %></td>
 
+                            <td>
+                                <form method="post" action="updateNotes.jsp" style="display:flex; gap:8px;">
+                                    <input type="text"
+                                           name="notes"
+                                           class="notes-input"
+                                           placeholder="Add notes..."
+                                           value="<%= notes %>" />
+
+                                    <input type="hidden"
+                                           name="courseId"
+                                           value="<%= rs.getString("Course_ID") %>" />
+
+                                    <input type="submit"
+                                           value="Save"
+                                           class="save-btn" />
+                                </form>
+                            </td>
+                        </tr>
+                        <%
+                        }
+                        %>
+                    </tbody>
+                </table>
             <%
+                }
+
             } catch (Exception e) {
             %>
-                <p>Error loading classes: <%= e.getMessage() %></p>
+                <p class="message">Error loading classes: <%= e.getMessage() %></p>
             <%
             } finally {
                 try { if (rs != null) rs.close(); } catch (Exception e) {}
@@ -132,15 +119,16 @@ if (studentId == null) {
             }
             %>
         </div>
-		<div class="section">
-	    <h2>Actions</h2>
-		    <div class="action-row">
-		        <a href="selectCourses.jsp" class="secondary-btn create-btn">Add Courses</a>
-		        <a href="validateCourses.jsp" class="secondary-btn create-btn">Validate Core Courses</a>
-		        <a href="<%= request.getContextPath() %>/logout" class="secondary-btn">Logout</a>
-		        <a href="deleteCourses.jsp" class="secondary-btn">Delete Courses</a>
-		    </div>
-		</div>
+
+        <div class="section">
+            <h2>Actions</h2>
+            <div class="action-row">
+                <a href="selectCourses.jsp" class="secondary-btn create-btn">Add Courses</a>
+                <a href="validateCourses.jsp" class="secondary-btn create-btn">Validate Core Courses</a>
+                <a href="deleteCourses.jsp" class="secondary-btn">Delete Courses</a>
+                <a href="login.jsp" class="secondary-btn">Logout</a>
+            </div>
+        </div>
 
     </div>
 </div>
