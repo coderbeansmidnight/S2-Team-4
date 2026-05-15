@@ -221,6 +221,12 @@ String msg = request.getParameter("msg");
                 <a href="deleteCourseFromSystem.jsp" class="secondary-btn">
                     Delete Course
                 </a>
+
+                <a href="createFaculty.jsp" class="secondary-btn create-btn">
+                Add Faculty
+                </a>
+
+
             </div>
         </div>
 
