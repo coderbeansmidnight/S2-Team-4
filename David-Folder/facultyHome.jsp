@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 <%@ page import="java.sql.*"%>
+<%@ page import="java.util.*"%>
 
 <%
 String role = (String) session.getAttribute("role");
@@ -17,52 +18,8 @@ if (facultyId == null || role == null || !role.equals("faculty")) {
     return;
 }
 
-String method = request.getMethod();
-
-if ("POST".equalsIgnoreCase(method)) {
-
-    String action = request.getParameter("action");
-
-    if ("updateDescription".equals(action)) {
-
-        String courseId = request.getParameter("courseId");
-        String description = request.getParameter("description");
-
-        Connection conn2 = null;
-        PreparedStatement ps2 = null;
-
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-
-            conn2 = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3307/finishinfour?autoReconnect=true&useSSL=false&serverTimezone=UTC",
-                "root",
-                "FoxyDoxy12!"
-            );
-
-            String sql2 = "UPDATE Course " +
-            			  "SET Description = ? " +
-            			  "WHERE Course_ID = ?";
-            ps2 = conn2.prepareStatement(sql2);
-
-            ps2.setString(1, description);
-            ps2.setString(2, courseId);
-
-            ps2.executeUpdate();
-
-            response.sendRedirect("facultyHome.jsp?msg=descUpdated");
-            return;
-
-        } catch (Exception e) {
-            out.println("<p class='error'>Error: " + e.getMessage() + "</p>");
-        } finally {
-            if (ps2 != null) ps2.close();
-            if (conn2 != null) conn2.close();
-        }
-    }
-}
-
 String searchQuery = request.getParameter("search");
+String msg = request.getParameter("msg");
 %>
 
 <!DOCTYPE html>
@@ -70,189 +27,214 @@ String searchQuery = request.getParameter("search");
 <head>
 <title>Faculty Home</title>
 <link rel="stylesheet"
-	href="<%=request.getContextPath()%>/css/studentHome.css">
+    href="<%=request.getContextPath()%>/css/studentHome.css">
 </head>
 
 <body>
 
-	<div class="page-container">
-		<div class="home-card">
+<div class="page-container">
+    <div class="home-card">
 
-			<h1>Faculty Home</h1>
-			<p class="subtitle">
-				Welcome, Professor
-				<%=displayName%>
-			</p>
+        <h1>Faculty Home</h1>
 
-			<div class="section">
-				<h2>Search Courses</h2>
+        <p class="subtitle">
+            Welcome, Professor
+            <%=displayName%>
+        </p>
 
-				<form method="get"
-					action="<%=request.getContextPath()%>/facultyHome.jsp"
-					class="search-form">
+        <%
+        if ("descUpdated".equals(msg)) {
+        %>
+            <p class="success">Description updated successfully.</p>
+        <%
+        }
+        %>
 
-					<input type="text" name="search"
-						placeholder="Search courses by name or ID"
-						value="<%=searchQuery != null ? searchQuery : ""%>">
+        <div class="section">
+            <h2>Search Courses</h2>
 
-					<button type="submit">Search</button>
-				</form>
-			</div>
+            <form method="get"
+                action="<%=request.getContextPath()%>/facultyHome.jsp"
+                class="search-form">
 
-			<div class="section">
-				<h2>Courses</h2>
+                <input type="text" name="search"
+                    placeholder="Search courses by name or ID"
+                    value="<%=searchQuery != null ? searchQuery : ""%>">
 
-				<%
-Connection conn = null;
-PreparedStatement ps = null;
-ResultSet rs = null;
+                <button type="submit">Search</button>
+            </form>
+        </div>
 
-try {
-    Class.forName("com.mysql.cj.jdbc.Driver");
+        <div class="section">
+            <h2>Courses</h2>
 
-    conn = DriverManager.getConnection(
-        "jdbc:mysql://localhost:3307/finishinfour?autoReconnect=true&useSSL=false&serverTimezone=UTC",
-        "root",
-        "FoxyDoxy12!"
-    );
+            <%
+            Connection conn = null;
+            PreparedStatement ps = null;
+            ResultSet rs = null;
 
-    String sql;
-    if (searchQuery != null && !searchQuery.trim().isEmpty()) {
-        sql = "SELECT * " +
-    		  "FROM Course " +
-        	  "WHERE Name LIKE ? OR Course_ID LIKE ?";
-    } else {
-        sql = "SELECT * FROM Course";
-    }
+            PreparedStatement notesStmt = null;
+            ResultSet notesRs = null;
 
-    ps = conn.prepareStatement(sql);
+            HashMap<String, String> notesMap = new HashMap<String, String>();
 
-    if (searchQuery != null && !searchQuery.trim().isEmpty()) {
-        ps.setString(1, "%" + searchQuery.trim() + "%");
-        ps.setString(2, "%" + searchQuery.trim() + "%");
-    }
+            try {
+                Class.forName("com.mysql.cj.jdbc.Driver");
 
-    rs = ps.executeQuery();
+                conn = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/FinishInFour?autoReconnect=true&useSSL=false&serverTimezone=UTC",
+                    "root",
+                    "PASSWORD"
+                );
 
-    boolean hasCourses = false;
+                notesStmt = conn.prepareStatement(
+                    "SELECT Course_ID, CourseNotes FROM Edits WHERE SJSU_ID = ?"
+                );
 
-    while (rs.next()) {
-        hasCourses = true;
+                notesStmt.setString(1, facultyId);
+                notesRs = notesStmt.executeQuery();
 
-        String courseId = rs.getString("Course_ID");
-        String courseName = rs.getString("Name");
-%>
+                while (notesRs.next()) {
+                    notesMap.put(
+                        notesRs.getString("Course_ID"),
+                        notesRs.getString("CourseNotes")
+                    );
+                }
 
-				<div class="section" style="margin-top: 20px;">
-					<h2><%=courseName%>
-						(<%=courseId%>)
-					</h2>
+                if (notesRs != null) notesRs.close();
+                if (notesStmt != null) notesStmt.close();
 
-					<p>
-						<strong>Description:</strong>
-						<%= rs.getString("Description") %>
-					</p>
+                String sql;
 
-					<form method="post" action="facultyHome.jsp">
-						<input type="hidden" name="action" value="updateDescription">
-						<input type="hidden" name="courseId" value="<%=courseId%>">
+                if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+                    sql = "SELECT * " +
+                          "FROM Course " +
+                          "WHERE Name LIKE ? OR Course_ID LIKE ?";
+                } else {
+                    sql = "SELECT * FROM Course";
+                }
 
-						<label>Edit Description:</label><br>
-						<textarea name="description" rows="3" cols="50"></textarea>
-						<br>
-						<br> <input type="submit" value="Update Description"
-							class="secondary-btn create-btn">
-					</form>
+                ps = conn.prepareStatement(sql);
 
-					<%
-PreparedStatement editStmt = null;
-ResultSet editRs = null;
+                if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+                    ps.setString(1, "%" + searchQuery.trim() + "%");
+                    ps.setString(2, "%" + searchQuery.trim() + "%");
+                }
 
-try {
-    editStmt = conn.prepareStatement("SELECT CourseNotes FROM Edits WHERE Course_ID = ? AND SJSU_ID = ?");
-    editStmt.setString(1, courseId);
-    editStmt.setString(2, facultyId);
+                rs = ps.executeQuery();
 
-    editRs = editStmt.executeQuery();
+                boolean hasCourses = false;
 
-    if (editRs.next()) {
-%>
-					<p>
-						<strong>Course Notes:</strong>
-						<%=editRs.getString("CourseNotes")%>
-					</p>
-					<%
-    } else {
-%>
-					<p>No notes yet.</p>
-					<%
-    }
+                while (rs.next()) {
+                    hasCourses = true;
 
-} finally {
-    if (editRs != null) editRs.close();
-    if (editStmt != null) editStmt.close();
-}
-%>
+                    String courseId = rs.getString("Course_ID");
+                    String courseName = rs.getString("Name");
+                    String description = rs.getString("Description");
+                    String courseNotes = notesMap.get(courseId);
+            %>
 
-					<form method="post"
-						action="<%=request.getContextPath()%>/handleEdit.jsp">
+            <div class="section" style="margin-top: 20px;">
+                <h2>
+                    <%=courseName%>
+                    (<%=courseId%>)
+                </h2>
 
-						<input type="hidden" name="courseId" value="<%=courseId%>">
+                <p>
+                    <strong>Description:</strong>
+                    <%=description%>
+                </p>
 
-						<label>Update Course Notes:</label><br>
-						<textarea name="courseNotes" rows="4" cols="50"></textarea>
+                <a href="editDescription.jsp?courseId=<%=courseId%>"
+                    class="secondary-btn create-btn">
+                    Edit Description
+                </a>
 
-						<br>
-						<br> <input type="submit" value="Update Notes"
-							class="secondary-btn create-btn">
-					</form>
+                <%
+                if (courseNotes != null && !courseNotes.trim().isEmpty()) {
+                %>
+                    <p>
+                        <strong>Course Notes:</strong>
+                        <%=courseNotes%>
+                    </p>
+                <%
+                } else {
+                %>
+                    <p>No notes yet.</p>
+                <%
+                }
+                %>
 
-				</div>
+                <form method="post"
+                    action="<%=request.getContextPath()%>/handleEdit.jsp">
 
-				<%
-    }
+                    <input type="hidden" name="courseId" value="<%=courseId%>">
 
-    if (!hasCourses) {
-%>
-				<p>No courses found.</p>
-				<%
-    }
+                    <label>Update Course Notes:</label><br>
+                    <textarea name="courseNotes" rows="4" cols="50"></textarea>
 
-} catch (Exception e) {
-%>
-				<p class="error">
-					Error:
-					<%=e.getMessage()%></p>
-				<%
-} finally {
-    if (rs != null) rs.close();
-    if (ps != null) ps.close();
-    if (conn != null) conn.close();
-}
-%>
+                    <br>
+                    <br>
 
-			</div>
+                    <input type="submit" value="Update Notes"
+                        class="secondary-btn create-btn">
+                </form>
 
-			<div class="section">
-				<h2>Course Management</h2>
-				<div class="action-row">
+            </div>
 
-					<a href="createCourse.jsp" class="secondary-btn create-btn">
-						Create Course </a> <a href="deleteCourseFromSystem.jsp"
-						class="secondary-btn"> Delete Course </a>
+            <%
+                }
 
-				</div>
-			</div>
+                if (!hasCourses) {
+            %>
+                <p>No courses found.</p>
+            <%
+                }
 
-			<div class="section">
-				<div class="action-row">
-					<a href="<%= request.getContextPath() %>/logout"
-						class="secondary-btn">Logout</a>
-				</div>
-			</div>
+            } catch (Exception e) {
+            %>
+                <p class="error">
+                    Error:
+                    <%=e.getMessage()%>
+                </p>
+            <%
+            } finally {
+                if (notesRs != null) notesRs.close();
+                if (notesStmt != null) notesStmt.close();
 
-		</div>
-	</div>
+                if (rs != null) rs.close();
+                if (ps != null) ps.close();
+                if (conn != null) conn.close();
+            }
+            %>
+
+        </div>
+
+        <div class="section">
+            <h2>Course Management</h2>
+
+            <div class="action-row">
+                <a href="createCourse.jsp" class="secondary-btn create-btn">
+                    Create Course
+                </a>
+
+                <a href="deleteCourseFromSystem.jsp" class="secondary-btn">
+                    Delete Course
+                </a>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="action-row">
+                <a href="<%=request.getContextPath()%>/logout"
+                    class="secondary-btn">
+                    Logout
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>
 
 </body>
 </html>
