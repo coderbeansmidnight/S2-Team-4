@@ -7,4 +7,4 @@ David Files: I created and uploaded the login + logout, and the studentHome, fac
 
 
 Functionalities Completed:
-Login, Logout, Account Creation, Change Password, Add Courses, View Courses Taken (integrated into studentHome), Validate Courses, faculty adding notes, and searching for courses, Delete Courses
+Login, Logout, Account Creation (for both students + faculty), Change Password, Add Courses, View Courses Taken (integrated into studentHome), Validate Courses, faculty adding notes, and searching for courses, Delete Courses
