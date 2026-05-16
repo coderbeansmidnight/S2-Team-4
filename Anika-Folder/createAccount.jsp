@@ -15,7 +15,7 @@ pageEncoding="UTF-8"%>
 <% if (request.getParameter("error") != null) { %> <p style="color:red;">Error creating account. Please try again.</p>
 <% } %>
 
-<form action="<%= request.getContextPath() %>/createAccount" method="post">
+<form action="<%= request.getContextPath() %>/accountCreated.jsp" method="post">
 
 <label>SJSU ID:</label>
 <input type="text" name="sjsuId" required><br><br>
