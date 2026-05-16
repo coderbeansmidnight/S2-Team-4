@@ -127,6 +127,9 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
 
                 <a href="<%= request.getContextPath() %>/createAccount.jsp"
                     class="secondary-btn create-btn"> Create Account </a>
+
+                <a href="<%=request.getContextPath()%>/guestHome.jsp"
+					class="secondary-btn"> Continue as Guest </a>
             </div>
 
         </div>
